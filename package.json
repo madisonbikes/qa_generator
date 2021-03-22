@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Ben Sandee",
-  "license": "ISC",
+  "license": "Apache-2.0",
+  "repository": "github:madisonbikes/qa_generator",
   "dependencies": {
     "csv-parser": "^3.0.0",
     "ts-node": "^9.1.1"
