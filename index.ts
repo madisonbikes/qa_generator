@@ -1,9 +1,18 @@
 import csv from "csv-parser";
 import fs from "fs";
 const temp_results: any[] = [];
+
+if (process.argv.length != 4) {
+  console.log("Requires two arguments, input csv and output html file");
+  process.exit(1);
+}
+
+const inputFile = process.argv[2];
+const outputFile = process.argv[3];
+
 const QUESTION_COUNT = 7;
 
-fs.createReadStream("answers.csv")
+fs.createReadStream(inputFile)
   .pipe(
     csv([
       "Timestamp",
@@ -26,17 +35,18 @@ fs.createReadStream("answers.csv")
   });
 
 function write(results: any[]) {
+  // sort by district, then last name
   results.sort((a, b) => {
     const district = a.District - b.District;
     if (district != 0) {
       return district;
     }
-    const aLastName = a.Name.split(" ").slice(-1).join(" ") as String;
-    const bLastName = b.Name.split(" ").slice(-1).join(" ") as String;
+    const aLastName = a.Name.split(" ").slice(-1).join(" ");
+    const bLastName = b.Name.split(" ").slice(-1).join(" ");
     return aLastName < bLastName ? -1 : 1;
   });
 
-  const output = fs.createWriteStream("output.html");
+  const output = fs.createWriteStream(outputFile);
 
   for (let responder = 1; responder < results.length; responder++) {
     const response = results[responder];
@@ -51,7 +61,7 @@ function write(results: any[]) {
         continue;
       }
       //output.write(`<a name="Q${i}"></a><h2>Question ${i}</h2>\n`);
-      let questionText = results[0][`Q${i}`] as String;
+      let questionText = results[0][`Q${i}`];
 
       // strip out "Q3: " header to some questions"
       //const matched = questionText.match("Q\\d+:\\s*(.*)");
@@ -59,7 +69,7 @@ function write(results: any[]) {
       //  questionText = matched[1];
       //}
 
-      let responseText = response[`Q${i}`] as String;
+      let responseText = response[`Q${i}`];
       responseText = responseText.trim();
       responseText = responseText.replace("\n", "</p><p>");
       if (responseText.length > 0) {
@@ -74,3 +84,5 @@ function write(results: any[]) {
 
   output.close();
 }
+
+process.exit(0);
