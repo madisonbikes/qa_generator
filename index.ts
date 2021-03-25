@@ -2,6 +2,11 @@ import csv from "csv-parser";
 import fs from "fs";
 const temp_results: any[] = [];
 
+process.on("uncaughtException", (err) => {
+  console.error(err);
+  process.exit(1);
+});
+
 if (process.argv.length != 4) {
   console.log("Requires two arguments, input csv and output html file");
   process.exit(1);
@@ -84,5 +89,3 @@ function write(results: any[]) {
 
   output.close();
 }
-
-process.exit(0);
